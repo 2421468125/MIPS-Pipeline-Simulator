@@ -6,7 +6,6 @@
         ${{ index }}: {{ value }}
       </div>
     </div>
-    <button @click="incrementValues">测试按钮</button>
   </div>
 </template>
 
@@ -15,13 +14,6 @@ import { storeToRefs } from 'pinia'
 import { useRegisterStore } from '@/stores/registerStore.js'
 const registerStore = useRegisterStore()
 const { register, pc } = storeToRefs(registerStore)
-const { getRegValue, setPC, setRegValue } = registerStore
-
-// 定义一个方法来增加 PC 和 $2 的值
-const incrementValues = () => {
-  setPC(pc.value + 4)
-  setRegValue(2, getRegValue(2) + 4)
-}
 </script>
 
 <style lang="scss" scoped>

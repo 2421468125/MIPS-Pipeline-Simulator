@@ -1,7 +1,7 @@
 import { useCodeStore, useHazardStore } from '@/stores/pipelineStore'
 import { useRegisterStore } from '@/stores/registerStore'
 import { useMemoryStore } from '@/stores/memoryStore'
-
+import { getStatisticData } from './utils.js'
 class PipelineStage {
   constructor(name) {
     this.name = name
@@ -39,6 +39,7 @@ class InstuctionFetch extends PipelineStage {
     const instruction = Pipeline.codeStore.getInstructionByPC(pc)
     // 处理load delay slot
     if (
+      Pipeline.HazardStore.forwardingOpen &&
       newIdResult.command === 'load' &&
       newIdResult.rs !== 0 &&
       (newIdResult.rs === instruction[4] || newIdResult.rs === instruction[5])
@@ -156,6 +157,7 @@ class Execute extends PipelineStage {
     this.branch = false
     // 处理定向逻辑
     if (
+      Pipeline.HazardStore.forwardingOpen &&
       meMResult.rs !== 0 &&
       (meMResult.instType === 'r' || meMResult.instType === 'i' || meMResult.command === 'load')
     ) {
@@ -167,7 +169,11 @@ class Execute extends PipelineStage {
         Pipeline.HazardStore.setDataHazard(this.instruction[5])
       }
     }
-    if (exResult.rs !== 0 && (exResult.instType === 'r' || exResult.instType === 'i')) {
+    if (
+      Pipeline.HazardStore.forwardingOpen &&
+      exResult.rs !== 0 &&
+      (exResult.instType === 'r' || exResult.instType === 'i')
+    ) {
       if (this.instruction[4] === exResult.rs) {
         data.rtValue = exResult.result
         Pipeline.HazardStore.setDataHazard(this.instruction[4])
@@ -389,7 +395,9 @@ class Pipeline {
     this.WB.flush()
     Pipeline.codeStore.resetTime()
     Pipeline.codeStore.resetAllInstructionState()
-    Pipeline.registerStore.setPC(0)
+    Pipeline.registerStore.resetRegister()
+    Pipeline.memoryStore.resetMemory()
+    Pipeline.HazardStore.resetHazardCount()
   }
 
   runOneCycle() {
@@ -406,6 +414,8 @@ class Pipeline {
     const newIdResult = this.ID.export()
     this.IF.setNewPC(exResult)
     this.IF.execute(newExResult, newIdResult)
+    if (Pipeline.codeStore.isEnd(Pipeline.registerStore.getPC())) {
+    }
   }
 
   runTillBreakpoint() {
@@ -420,6 +430,10 @@ class Pipeline {
         break
       }
     }
+  }
+
+  getStatistics() {
+    return getStatisticData()
   }
 }
 

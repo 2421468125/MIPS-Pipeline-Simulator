@@ -24,10 +24,6 @@ import { storeToRefs } from 'pinia'
 const CodeState = useCodeStore()
 const { instructionState, breakpoints, time } = storeToRefs(CodeState)
 const showdInstructionState = computed(() => {
-  console.log(
-    'instructionState',
-    instructionState.value.filter((inst) => inst[1] !== 0),
-  )
   return instructionState.value.filter((inst) => inst[1] !== 0)
 })
 const gridStyle = computed(() => {

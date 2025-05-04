@@ -4,6 +4,11 @@
       <Button label="单步执行" @click="stepExecute" severity="success" raised />
       <Button label="执行到断点" @click="runToBreakpoint" severity="success" raised />
       <Button label="重置" @click="resetPipeline" severity="success" raised />
+      <div class="toggle-switch">
+        <p style="font-weight: bold">开启数据定向</p>
+        <ToggleSwitch v-model="forwardingOpen" />
+      </div>
+      <Button label="Show" @click="visible = true" />
     </div>
     <table class="instruction-table">
       <thead>
@@ -30,19 +35,35 @@
       </tbody>
     </table>
   </div>
+  <Dialog
+    v-model:visible="visible"
+    maximizable
+    modal
+    header="性能统计分析"
+    :style="{ width: '50rem' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+    <p class="m-0" style="white-space: pre-wrap">
+      {{ pipeline.getStatistics() }}
+    </p>
+  </Dialog>
 </template>
 
 <script setup>
 import Button from 'primevue/button'
-import { useCodeStore } from '@/stores/pipelineStore.js'
+import ToggleSwitch from 'primevue/toggleswitch'
+import Dialog from 'primevue/dialog'
+import { useCodeStore, useHazardStore } from '@/stores/pipelineStore.js'
 import { storeToRefs } from 'pinia'
 import { ref, computed, onMounted } from 'vue'
 import Pipeline from '@/core/pipeline.js'
 
 const CodeState = useCodeStore()
 let { instructionState, breakpoints } = storeToRefs(CodeState)
+let { forwardingOpen } = storeToRefs(useHazardStore())
 let { addBreakpoint, removeBreakpoint, clearBreakpoint } = CodeState
 const pipeline = Pipeline.getInstance()
+const visible = ref(false)
 
 let instuctionCompleted = computed(() => {
   // 0：未进行， 1：正在进行，2:已完成
@@ -60,17 +81,14 @@ let instuctionCompleted = computed(() => {
 })
 
 const stepExecute = () => {
-  console.log('单步执行')
   pipeline.runOneCycle()
 }
 
 const runToBreakpoint = () => {
-  console.log('执行到断点')
   pipeline.runTillBreakpoint()
 }
 
 const resetPipeline = () => {
-  console.log('重置流水线')
   pipeline.reset()
 }
 
@@ -100,8 +118,14 @@ function getInstructionColor(index) {
 
 .button-group {
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
   margin-bottom: 16px;
+  .toggle-switch {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .instruction-table {

@@ -39,14 +39,12 @@ export const useCodeStore = defineStore('code', () => {
   }
 
   function isEnd(pc) {
-    return pc / 4 >= instructions.value.length
+    return pc / 4 >= instructions.value.length + 3
   }
 
   watch(
     () => code.value,
     (newCode) => {
-      console.log('code changed', newCode)
-
       resetAllInstructionState()
       // test code
       // instructionState.value.forEach((inst, index) => {
@@ -173,13 +171,20 @@ export const useHazardStore = defineStore('hazard', () => {
   const controlHazard = ref(0)
   const dataHazardRegister = ref([])
   const controlHazardPC = ref([])
+  const forwardingOpen = ref(true)
+  const hazardCount = {
+    dataHazard: 0,
+    controlHazard: 0,
+  }
 
   function setDataHazard(register) {
+    hazardCount.dataHazard++
     dataHazard.value++
     dataHazardRegister.value.push(register)
   }
 
   function setControlHazard(pc) {
+    hazardCount.controlHazard++
     controlHazard.value++
     controlHazardPC.value.push(pc)
   }
@@ -194,14 +199,23 @@ export const useHazardStore = defineStore('hazard', () => {
     controlHazardPC.value = []
   }
 
+  function resetHazardCount() {
+    hazardCount.dataHazard = 0
+    hazardCount.controlHazard = 0
+  }
+
   return {
     dataHazard,
     controlHazard,
     dataHazardRegister,
     controlHazardPC,
+    hazardCount,
+    resetHazardCount,
     setDataHazard,
     setControlHazard,
     clearDataHazard,
     clearControlHazard,
+
+    forwardingOpen,
   }
 })

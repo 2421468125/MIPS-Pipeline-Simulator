@@ -15,7 +15,8 @@ mips-pipeline-simulator/
 │ │ └── HazardInfo.vue # 显示冒险信息
 │ ├── core/ # 核心模拟器逻辑 (纯 JavaScript/TypeScript)
 │ │ ├── instructionParser.js # MIPS 指令解析器
-│ │ └── pipeline.js # 流水线核心逻辑 (阶段、冒险处理)
+| | ├── pipeline.js # 流水线核心逻辑 (阶段、冒险处理)
+│ │ └── utils.js # 一些辅助函数
 │ ├── stores/ # Pinia 状态管理
 │ │ ├── pipelineStore.js # 管理流水线状态 (PC, 各阶段指令, 冒险)
 │ │ ├── registerStore.js # 管理寄存器状态
