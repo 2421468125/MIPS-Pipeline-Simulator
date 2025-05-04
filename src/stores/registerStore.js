@@ -10,7 +10,7 @@ export const useRegisterStore = defineStore('register', () => {
 
   const getRegValue = (index) => {
     if (index < 0 || index > 31) return null
-    registerCount.getRegValue++
+    if (index !== 0) registerCount.getRegValue++
     return register.value[index]
   }
 

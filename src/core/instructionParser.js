@@ -64,7 +64,7 @@ export default function instructionParser() {
           } else if (n1 < 0 || n1 > 31) {
             throw new Error(`Invalid register number: ${inst}`)
           }
-          arrays.push([inst, command, 'b', n1, 0, 0, labels[array[2]], 0])
+          arrays.push([inst, command, 'b', 0, n1, 0, labels[array[2]], 0])
         } else {
           let n2 = parseInt(array[2].slice(1), 10)
           if (array[1][0] != '$' || array[2][0] != '$' || isNaN(n1) || isNaN(n2)) {
@@ -72,7 +72,7 @@ export default function instructionParser() {
           } else if (n1 < 0 || n1 > 31 || n2 < 0 || n2 > 31) {
             throw new Error(`Invalid register number: ${inst}`)
           }
-          arrays.push([inst, command, 'b', n1, n2, 0, labels[array[3]], 0])
+          arrays.push([inst, command, 'b', 0, n1, n2, labels[array[3]], 0])
         }
       } else if (INST_TYPE.M.includes(command)) {
         let match = array[2].match(/(-?\d+)\(\$(\d+)\)/)

@@ -74,7 +74,6 @@ class InstuctionFetch extends PipelineStage {
 class InstructionDecode extends PipelineStage {
   constructor() {
     super('ID')
-    this.rsValue = 0
     this.rtValue = 0
     this.rdValue = 0
     this.imm = 0
@@ -92,7 +91,6 @@ class InstructionDecode extends PipelineStage {
 
     super.execute(instruction, pc)
     console.log(`Decodeing instruciton : ${instruction[0]}`)
-    this.rsValue = Pipeline.registerStore.getRegValue(instruction[3])
     this.rtValue = Pipeline.registerStore.getRegValue(instruction[4])
     this.rdValue = Pipeline.registerStore.getRegValue(instruction[5])
     this.imm = instruction[6]
@@ -132,7 +130,6 @@ class InstructionDecode extends PipelineStage {
 
   flush() {
     super.flush()
-    this.rsValue = 0
     this.rtValue = 0
     this.rdValue = 0
     this.imm = 0
@@ -229,37 +226,38 @@ class Execute extends PipelineStage {
         break
       case 'beq':
       case 'beqz':
-        if (data.rsValue === data.rtValue) {
+        if (data.rtValue === data.rdValue) {
           this.result = data.imm
           this.branch = true
         }
+        break
       case 'bne':
       case 'bnez':
-        if (data.rsValue !== data.rtValue) {
+        if (data.rtValue !== data.rdValue) {
           this.result = data.imm
           this.branch = true
         }
         break
       case 'blt':
-        if (data.rsValue < data.rtValue) {
+        if (data.rtValue < data.rdValue) {
           this.result = data.imm
           this.branch = true
         }
         break
       case 'bgt':
-        if (data.rsValue > data.rtValue) {
+        if (data.rtValue > data.rdValue) {
           this.result = data.imm
           this.branch = true
         }
         break
       case 'ble':
-        if (data.rsValue <= data.rtValue) {
+        if (data.rtValue <= data.rdValue) {
           this.result = data.imm
           this.branch = true
         }
         break
       case 'bge':
-        if (data.rsValue >= data.rtValue) {
+        if (data.rtValue >= data.rdValue) {
           this.result = data.imm
           this.branch = true
         }

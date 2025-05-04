@@ -8,7 +8,7 @@
         <p style="font-weight: bold">开启数据定向</p>
         <ToggleSwitch v-model="forwardingOpen" />
       </div>
-      <Button label="Show" @click="visible = true" />
+      <Button label="性能分析" @click="visible = true" />
     </div>
     <table class="instruction-table">
       <thead>
